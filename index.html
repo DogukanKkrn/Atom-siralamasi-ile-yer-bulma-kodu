@@ -1,1 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Atom Analiz Sistemi</title>
+    <style>
+        body { margin: 0; padding: 20px; font-family: sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; }
+        .container { background: #1e293b; padding: 20px; border-radius: 15px; width: 1100px; display: flex; gap: 20px; }
+        .left { flex: 3; }
+        .right { flex: 1; background: #0f172a; padding: 20px; border-radius: 10px; border: 2px solid #334155; text-align: center; }
+        .periodic-table { display: grid; grid-template-columns: repeat(18, 1fr); gap: 4px; margin-top: 20px; }
+        .cell { width: 40px; height: 40px; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; border-radius: 4px; }
+        .cell.highlight { background: #22c55e !important; color: black; transform: scale(1.1); box-shadow: 0 0 15px #22c55e; }
+        .empty { background: transparent; }
+        input { padding: 10px; width: 70%; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; background: #22c55e; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .big-symbol { font-size: 60px; color: #22c55e; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>Atom Analiz Sistemi</h1>
+            <input type="text" id="inp" placeholder="Örn: 1s2 2s2">
+            <button onclick="bul()">GÖNDER</button>
+            <div id="table" class="periodic-table"></div>
+        </div>
+        <div class="right" id="info">
+            <h3>Element Bilgisi</h3>
+            <div id="res">Dizilim giriniz...</div>
+        </div>
+    </div>
 
+    <script>
+        const data = [
+            {z:1, s:"H", p:1, g:1, n:"Hidrojen"}, {z:2, s:"He", p:1, g:18, n:"Helyum"},
+            {z:3, s:"Li", p:2, g:1, n:"Lityum"}, {z:4, s:"Be", p:2, g:2, n:"Berilyum"},
+            {z:5, s:"B", p:2, g:13, n:"Bor"}, {z:6, s:"C", p:2, g:14, n:"Karbon"},
+            {z:7, s:"N", p:2, g:15, n:"Azot"}, {z:8, s:"O", p:2, g:16, n:"Oksijen"},
+            {z:9, s:"F", p:2, g:17, n:"Flor"}, {z:10, s:"Ne", p:2, g:18, n:"Neon"},
+            {z:11, s:"Na", p:3, g:1, n:"Sodyum"}, {z:12, s:"Mg", p:3, g:2, n:"Magnezyum"},
+            {z:13, s:"Al", p:3, g:13, n:"Alüminyum"}, {z:14, s:"Si", p:3, g:14, n:"Silisyum"},
+            {z:15, s:"P", p:3, g:15, n:"Fosfor"}, {z:16, s:"S", p:3, g:16, n:"Kükürt"},
+            {z:17, s:"Cl", p:3, g:17, n:"Klor"}, {z:18, s:"Ar", p:3, g:18, n:"Argon"},
+            {z:19, s:"K", p:4, g:1, n:"Potasyum"}, {z:20, s:"Ca", p:4, g:2, n:"Kalsiyum"},
+            {z:37, s:"Rb", p:5, g:1, n:"Rubidyum"}, {z:38, s:"Sr", p:5, g:2, n:"Stronsiyum"},
+            {z:54, s:"Xe", p:5, g:18, n:"Ksenon"} // Örnek olarak birkaç tane ekledim, sen listeyi büyütebilirsin
+        ];
+
+        function draw() {
+            const t = document.getElementById('table');
+            for(let r=1; r<=7; r++) {
+                for(let c=1; c<=18; c++) {
+                    const el = data.find(x => x.p==r && x.g==c);
+                    const div = document.createElement('div');
+                    div.id = `c-${r}-${c}`;
+                    if(el) { div.className='cell'; div.innerText=el.s; }
+                    else { div.className='cell empty'; }
+                    t.appendChild(div);
+                }
+            }
+        }
+        draw();
+
+        function bul() {
+            document.querySelectorAll('.highlight').forEach(x => x.classList.remove('highlight'));
+            const val = document.getElementById('inp').value;
+            const nums = val.match(/\d+/g);
+            let total = 0;
+            if(nums) nums.forEach((n, i) => { if(i%2!=0) total += parseInt(n); });
+            
+            const atom = data.find(x => x.z == total);
+            if(atom) {
+                document.getElementById(`c-${atom.p}-${atom.g}`).classList.add('highlight');
+                document.getElementById('res').innerHTML = `<div class="big-symbol">${atom.s}</div><b>${atom.n}</b><br>Atom No: ${atom.z}`;
+            } else {
+                document.getElementById('res').innerText = "Element bulunamadı (Z=" + total + ")";
+            }
+        }
+    </script>
+</body>
+</html>
